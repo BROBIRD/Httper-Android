@@ -36,6 +36,8 @@
     <string name="history_view_empty">No history</string>
 
     <string name="response_url">Request URL</string>
+    <string name="tlsVersion">TLS Version</string>
+    <string name="cipherSuite">Cipher Suite</string>
     <string name="response_status">Status</string>
     <string name="response_headers">Response Headers</string>
     <string name="context_menu_copy">Copy to clipboard</string>

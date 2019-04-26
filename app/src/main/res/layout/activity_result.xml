@@ -56,6 +56,69 @@
                 android:text="@string/main_view_url_example"
                 android:textIsSelectable="true"/>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"/>
+
+            <TextView
+                android:id="@+id/textViewTLS"
+                style="@style/AppTheme.TextAppearanceNormal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/tlsVersion"/>
+
+            <View
+                android:id="@+id/cd0"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"/>
+
+            <TextView
+                android:id="@+id/textViewTLSVersion"
+                style="@style/AppTheme.TextAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textIsSelectable="true"
+                android:typeface="monospace"/>
+
+            <View
+                android:id="@+id/cd1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"/>
+
+            <TextView
+                android:id="@+id/textViewCipher"
+                style="@style/AppTheme.TextAppearanceNormal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/cipherSuite"/>
+
+            <View
+                android:id="@+id/cd2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"/>
+
+            <TextView
+                android:id="@+id/textViewCipherSuite"
+                style="@style/AppTheme.TextAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textIsSelectable="true"
+                android:typeface="monospace"/>
+
+            <View
+                android:id="@+id/cd3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorDivider"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

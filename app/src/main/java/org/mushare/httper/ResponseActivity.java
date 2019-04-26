@@ -47,10 +47,13 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.CipherSuite;
 import okhttp3.Headers;
+import okhttp3.Handshake;
 import okhttp3.MediaType;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.TlsVersion;
 import okhttp3.internal.Util;
 
 import static android.os.Build.VERSION.SDK_INT;
@@ -77,6 +80,9 @@ public class ResponseActivity extends AppCompatActivity {
     MyHandler myHandler = new MyHandler(this);
 
     File cacheFile;
+    Handshake handshake =null;
+    CipherSuite cipherSuite = null;
+    TlsVersion tlsVersion = null;
     boolean refreshing;
     int statusCode;
     CharSequence responseHeaders;
@@ -89,6 +95,11 @@ public class ResponseActivity extends AppCompatActivity {
     BottomSheetBehavior bottomSheetBehavior;
 
     TextView textViewURL;
+    TextView textViewTLS;
+    TextView textViewCipher;
+    TextView textViewTLSVersion;
+    TextView textViewCipherSuite;
+    View cd0,cd1,cd2,cd3;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,8 +114,16 @@ public class ResponseActivity extends AppCompatActivity {
         toolbar = (MyTouchableLinearLayout) findViewById(R.id.appBar);
 
         textViewURL = (TextView) findViewById(R.id.textViewURL);
+        textViewTLS = (TextView) findViewById(R.id.textViewTLS);
+        textViewCipher = (TextView) findViewById(R.id.textViewCipher);
+        textViewTLSVersion = (TextView) findViewById(R.id.textViewTLSVersion);
+        textViewCipherSuite = (TextView) findViewById(R.id.textViewCipherSuite);
         textViewStatusCode = (TextView) findViewById(R.id.textViewStatusCode);
         textViewHeader = (TextView) findViewById(R.id.textViewHeaders);
+        cd0 = (View) findViewById(R.id.cd0);
+        cd1 = (View) findViewById(R.id.cd1);
+        cd2 = (View) findViewById(R.id.cd2);
+        cd3 = (View) findViewById(R.id.cd3);
 
         viewPager = (ViewPager) findViewById(R.id.content);
         viewPager.setOffscreenPageLimit(2);
@@ -137,7 +156,7 @@ public class ResponseActivity extends AppCompatActivity {
         method = intent.getStringExtra("method");
         body = intent.getStringExtra("body");
 
-        cacheFile = new File(getCacheDir(), "response_cache");
+        cacheFile = new File(getCacheDir(), "response_cache.html");
         if (savedInstanceState == null || (refreshing = savedInstanceState.getBoolean
                 ("refreshing"))) {
             cacheFile.delete();
@@ -154,6 +173,20 @@ public class ResponseActivity extends AppCompatActivity {
             statusCode = savedInstanceState.getInt("statusCode");
             responseHeaders = savedInstanceState.getCharSequence("responseHeaders");
             textViewURL.setText(url);
+            if(handshake != null){
+                textViewTLSVersion.setText(tlsVersion.toString());
+                textViewCipherSuite.setText(cipherSuite.toString());
+            }
+            else{
+                textViewTLS.setVisibility(View.GONE);
+                textViewTLSVersion.setVisibility(View.GONE);
+                textViewCipher.setVisibility(View.GONE);
+                textViewCipherSuite.setVisibility(View.GONE);
+                cd0.setVisibility(View.GONE);
+                cd1.setVisibility(View.GONE);
+                cd2.setVisibility(View.GONE);
+                cd3.setVisibility(View.GONE);
+            }
             textViewStatusCode.setText(String.valueOf(statusCode));
             textViewHeader.setText(responseHeaders);
         }
@@ -265,6 +298,20 @@ public class ResponseActivity extends AppCompatActivity {
         MyPagerAdapter pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         textViewURL.setText(url);
+        if(handshake != null){
+            textViewTLSVersion.setText(tlsVersion.toString());
+            textViewCipherSuite.setText(cipherSuite.toString());
+        }
+        else{
+            textViewTLS.setVisibility(View.GONE);
+            textViewTLSVersion.setVisibility(View.GONE);
+            textViewCipher.setVisibility(View.GONE);
+            textViewCipherSuite.setVisibility(View.GONE);
+            cd0.setVisibility(View.GONE);
+            cd1.setVisibility(View.GONE);
+            cd2.setVisibility(View.GONE);
+            cd3.setVisibility(View.GONE);
+        }
         textViewStatusCode.setText(String.valueOf(statusCode));
         textViewHeader.setText(responseHeaders);
         refreshView.setVisibility(View.GONE);
@@ -287,6 +334,7 @@ public class ResponseActivity extends AppCompatActivity {
     protected void onDestroy() {
         if (call != null) call.cancel();
         responseBody = null;
+        handshake = null;
         super.onDestroy();
     }
 
@@ -299,6 +347,8 @@ public class ResponseActivity extends AppCompatActivity {
         outState.putCharSequence("responseHeaders", responseHeaders);
         outState.putString("url", url);
         outState.putString("charset", charset);
+        outState.putString("tlsVersion",tlsVersion.toString());
+        outState.putString("cipherSuite",cipherSuite.toString());
     }
 
     @Nullable
@@ -419,6 +469,14 @@ public class ResponseActivity extends AppCompatActivity {
 
         @Override
         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            handshake = response.handshake();
+            if (handshake != null){
+                try {
+                    cipherSuite = handshake.cipherSuite();
+                    tlsVersion = handshake.tlsVersion();
+                } catch (NullPointerException ignored) {
+                }
+            }
             ResponseBody body = response.body();
             if (body != null) {
                 try {
