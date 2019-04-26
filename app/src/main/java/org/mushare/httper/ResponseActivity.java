@@ -335,6 +335,8 @@ public class ResponseActivity extends AppCompatActivity {
         if (call != null) call.cancel();
         responseBody = null;
         handshake = null;
+        cipherSuite = null;
+        tlsVersion = null;
         super.onDestroy();
     }
 
